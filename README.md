@@ -28,3 +28,18 @@ Scikit-learn：https://www.jianshu.com/p/e0844e7cdba5
 中文定制的小范本文本分类：https://blog.csdn.net/qq_28626909/article/details/80382029
 ---HINT 可以想想都对与文本直接进行x朴素贝叶斯等分类的方法并不适合这个模型。而且大多数基于naive bayes以及random forest的分类都是判别模型，即按0-1，是否分类，不适用于这种。可能得自己
 按提取的关键词来按照频次来判断（目前收获不一定正确，让我在看看，如果不对的话就无视了哈）
+
+思路1:根据（http://www.voidcn.com/article/p-ecjuievh-btq.html） 
+            1对每个文本执行字频扫描，提取最常用的词70个。
+            2.提取70个单词列表中的前20个.['a', 'all', 'also', 'an', 'and', 'any', 'are', 'as', 'at', 'be', 'been',
+            'but', 'by', 'can', 'do', 'down', 'even', 'every', 'for', 'from']
+            3.生成单词中的每个单词的计数如[78, 34, 21, 45, 76, 9, 23, 12, 43, 54, 110, 21, 45, 59, 87, 59, 34, 104, 93, 40]
+            4.这些数据点中的每一个都是作者文学指纹的一个实例.
+            5.按照z生成的文学指纹进行判断。
+
+思路2:根据（https://blog.csdn.net/Aaronji1222/article/details/78153269）
+          1.提取关键词进行自动的聚类分析
+          2.可以用scikit-learn里面的feature_extraction模块将新的文本集转化为tfidf模型（这一步很重要，
+          因为tf-idf能够把其中的一些高频不想干的词以及很低频但是有着非常极端倾向以及口语化俚语话的具有辨识度
+          的词语进行一个筛选，这一步对于整个准确率至关重要！）
+          3.计算RWMD，转换函数将RWMD转化为相似度。ranking选择。
