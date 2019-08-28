@@ -24,3 +24,7 @@ https://www.kaggle.com/alaix14/bitcoin-tweets-20160101-to-20190329/downloads/bit
 Pandas使用入门指南：https://codingpy.com/article/a-quick-intro-to-pandas/
 spaCy的主要操作：https://www.jianshu.com/p/74e6c5376bc0
 Scikit-learn：https://www.jianshu.com/p/e0844e7cdba5
+
+中文定制的小范本文本分类：https://blog.csdn.net/qq_28626909/article/details/80382029
+---HINT 可以想想都对与文本直接进行x朴素贝叶斯等分类的方法并不适合这个模型。而且大多数基于naive bayes以及random forest的分类都是判别模型，即按0-1，是否分类，不适用于这种。可能得自己
+按提取的关键词来按照频次来判断（目前收获不一定正确，让我在看看，如果不对的话就无视了哈）
