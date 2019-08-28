@@ -21,3 +21,5 @@ User, fullname, tweet-id,timestamp, url, likes,replies,retweets, text, html
 https://www.kaggle.com/alaix14/bitcoin-tweets-20160101-to-20190329/downloads/bitcoin-tweets-20160101-to-20190329.zip/1
 
 推特情感分析归类https://pdfs.semanticscholar.org/f7e5/18c99a0ffd997e6d7b385dda1675c3f3ef3c.pdf
+Pandas使用入门指南：https://codingpy.com/article/a-quick-intro-to-pandas/
+spaCy的主要操作：https://www.jianshu.com/p/74e6c5376bc0
