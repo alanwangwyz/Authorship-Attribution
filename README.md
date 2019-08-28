@@ -19,3 +19,5 @@ Scrapped from twitters from 2016-01-01 to 2019-03-29, Collecting Tweets containi
 Content
 User, fullname, tweet-id,timestamp, url, likes,replies,retweets, text, html
 https://www.kaggle.com/alaix14/bitcoin-tweets-20160101-to-20190329/downloads/bitcoin-tweets-20160101-to-20190329.zip/1
+
+推特情感分析归类https://pdfs.semanticscholar.org/f7e5/18c99a0ffd997e6d7b385dda1675c3f3ef3c.pdf
