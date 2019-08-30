@@ -43,3 +43,23 @@ Scikit-learn：https://www.jianshu.com/p/e0844e7cdba5
           因为tf-idf能够把其中的一些高频不想干的词以及很低频但是有着非常极端倾向以及口语化俚语话的具有辨识度
           的词语进行一个筛选，这一步对于整个准确率至关重要！）
           3.计算RWMD，转换函数将RWMD转化为相似度。ranking选择。
+
+
+
+分类关键词： 
+1.@handle
+2.RT
+3. if "!!"  
+4.re:
+5. if "http://"
+6.# + "a-z"
+7.lf length>50
+8.Lol
+9.bitch
+10.Hah
+11.:^D
+12.$+"int"
+13.(a-z){3,}
+14.:(
+15..jpg
+16.A-Z{3,}
