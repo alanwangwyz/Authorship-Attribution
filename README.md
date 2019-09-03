@@ -44,8 +44,8 @@ Scikit-learn：https://www.jianshu.com/p/e0844e7cdba5
           的词语进行一个筛选，这一步对于整个准确率至关重要！）
           3.计算RWMD，转换函数将RWMD转化为相似度。ranking选择。
 
-
-
+https://towardsdatascience.com/multi-class-text-classification-with-doc2vec-logistic-regression-9da9947b43f4
+https://towardsdatascience.com/the-real-world-as-seen-on-twitter-sentiment-analysis-part-one-5ac2d06b63fb
 分类关键词： 
 1.@handle
 2.RT
