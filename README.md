@@ -7,4 +7,7 @@
 https://www.kaggle.com/c/whodunnit/leaderboard
 
 ## Final Result ##
-![image](https://github.com/alanwangwyz/Authorship-Attribution/blob/master/image/Leaderboard.jpg)
+![image](https://github.com/alanwangwyz/Authorship-Attribution/blob/master/image/Leaderboard.jpeg)
+
+## Kaggle Improvement ##
+![image](https://github.com/alanwangwyz/Authorship-Attribution/blob/master/image/Competition.jpeg)
