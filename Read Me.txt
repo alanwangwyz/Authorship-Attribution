@@ -1,0 +1,33 @@
+There are five files, and each of them contains corresponding .py document.
+
+1. ManualFeatures
+   ManualFeatures_Linear.py:  Using manual method to extract features with linear model.
+
+2. linearSVC
+   TFIDF_5W_linearSVC.py: Using TF-IDF method to extract 50000 features with linearSVC model.
+   TFIDF_6W_linearSVC.py: Using TF-IDF method to extract 50000 features with linearSVC model.
+   TFIDF_7W_linearSVC.py: Using TF-IDF method to extract 70000 features with linearSVC model.
+   TFIDF_7.4195W_linearSVC.py: Using TF-IDF method to extract 50000 features with linearSVC model.
+   TFIDF_8W_linearSVC.py: Using TF-IDF method to extract 50000 features with linearSVC model.
+
+   TFIDF_20W_linearSVC.py: Using TF-IDF method to extract 200000 features with linearSVC model.
+   BOW_5W_linearSVC.py: Using BOW method to extract 50000 features with linearSVC model.
+   BOW_7W_linearSVC.py: Using BOW method to extract 70000 features with linearSVC model.
+   BOW_20W_linearSVC.py: Using BOW method to extract 200000 features with linearSVC model.
+
+3. Logistic
+   TFIDF_5W_Logistic.py: Using TF-IDF method to extract 50000 features with logistic regression model.
+   TFIDF_6W_Logistic.py: Using TF-IDF method to extract 50000 features with logistic regression model.
+   TFIDF_7W_Logistic.py: Using TF-IDF method to extract 50000 features with logistic regression model.
+   TFIDF_7.41945W_Logistic.py: Using TF-IDF method to extract 50000 features with logistic regression model.
+   TFIDF_8W_Logistic.py: Using TF-IDF method to extract 50000 features with logistic regression model.
+   TFIDF_10W_Logistic.py: Using TF-IDF method to extract 100000 features with logistic regression model.
+   TFIDF_20W_Logistic.py: Using TF-IDF method to extract 200000 features with logistic regression model.
+   BOW_5W_linearSVC.py: Using BOW method to extract 50000 features with logistic regression model.
+   BOW_10W_linearSVC.py: Using BOW method to extract 100000 features with logistic regression model.
+   BOW_20W_linearSVC.py: Using BOW method to extract 200000 features with logistic regression model.
+
+4. Tokenise
+   TFIDF_Logistic_Token_5W.py: Using TF-IDF method to extract 50000 features with tokenised context.
+   BOW_Logistic_Token_5W.py: Using BOW method to extract 50000 features with tokenised context.
+5 Linear model:Using BOW method to extract 50000 features with linear model from scikitlearn.

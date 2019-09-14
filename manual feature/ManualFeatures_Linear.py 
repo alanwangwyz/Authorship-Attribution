@@ -1,0 +1,236 @@
+import re, pickle, os, string
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import numpy as np 
+import pandas as pd 
+import nltk
+import string
+import spacy
+from profanity import profanity
+from nltk.corpus import stopwords
+from spacy.util import compile_prefix_regex, compile_infix_regex, compile_suffix_regex
+from spacy.tokenizer import Tokenizer
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_style('whitegrid')
+
+train_data = None
+test_data = None
+
+def load_data():
+    global train_data, test_data
+    
+    train_data = pd.read_csv('train_tweets.txt', delimiter="\t")
+    test_data = pd.read_csv('test_tweets_unlabeled.txt', delimiter="\t", header = None, error_bad_lines=False)
+
+load_data()
+train_data.columns = ['Author', 'Tweet']
+test_data.columns = ['Tweet']
+print(test_data)
+
+f = open('test_tweets_unlabeled.txt', 'r')    # 打开文件
+data = f.read()
+test_data = pd.read_csv('test_tweets_unlabeled.txt', delimiter="\t", error_bad_lines=False)
+
+
+def load_pickle(filepath):
+    documents_f = open(filepath, 'rb')
+    file = pickle.load(documents_f)
+    documents_f.close()
+    
+    return file
+
+def save_pickle(data, filepath):
+    save_documents = open(filepath, 'wb')
+    pickle.dump(data, save_documents)
+    save_documents.close()
+    
+def custom_tokenizer(nlp):
+    infix_re = re.compile(r'''[.\?\:\;\...\‘\’\`\“\”\"\'~]''')
+    prefix_re = compile_prefix_regex(nlp.Defaults.prefixes)
+    suffix_re = compile_suffix_regex(nlp.Defaults.suffixes)
+
+    return Tokenizer(nlp.vocab, prefix_search=prefix_re.search,
+                                suffix_search=suffix_re.search,
+                                infix_finditer=infix_re.finditer,
+                                token_match=None)
+spacy_nlp = spacy.load("en")
+spacy_nlp.tokenizer = custom_tokenizer(spacy_nlp)
+nlp1 = spacy.load('en_core_web_lg')
+
+stp = [word for word in list(stopwords.words('english') + [ "'s", "'m", "ca"])
+        if word not in ["no", "not"] and word.rfind("n't") == -1]
+
+class PreProcessor(object):
+    '''Pre-processor which cleans text, lemmatises, removes stop words and punctuation, 
+    returns df of processed text.'''
+
+    def __init__(self):
+        self._stopWordList = stp
+        self._punct_removal = list(string.punctuation)
+        self.sid = SentimentIntensityAnalyzer()
+
+    def _tokenize_text(self, sample):
+        '''tokenises sentences in order to lemmatise, remove stop words and punctuation, 
+        returns string of processed text'''
+
+        # get tokens using spacy
+        tokens = spacy_nlp(sample)
+
+        # lemmatising tokens
+        tokens = [t.lemma_.strip()
+                  if t.lemma_ != "-PRON-"
+                  else t.lower_
+                  for t in tokens]
+
+        # stopword and punctuation removal
+        tokens = [t.lower() for t in tokens
+                  if (t not in self._stopWordList and t not in self._punct_removal)]
+
+        processed_text = " ".join(tokens)
+        return processed_text
+    
+    def remove_url(self, text):
+        result = re.sub(r"http\S+", "", text)
+        return result
+    
+    def check_url(self, text):
+        url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text) 
+        if len(url) != 0:
+            return True
+        return False
+    
+    def unique_words(self, words):
+        word_count = len(words)
+        unique_count = len(set(words))
+        if word_count!=0:
+            return unique_count / word_count
+        return 0
+    
+    def mention(self, text):
+        return set([re.sub(r"(\W+)$", "", j) for j in set([i for i in text.split() if i.startswith("@")])])
+    
+    def retweet(self, text):
+        rt = 'rt'
+        if rt in text:
+            return True
+        return False
+    
+    def hashtag(self, text):
+        return set([re.sub(r"(\W+)$", "", j) for j in set([i for i in text.split() if i.startswith("#")])])
+    
+    def extract_emojis(self, text):
+        happy = [':-)', ':-D', ':)', ':o)', ':]', ':3', ':c)', ':>', '=]', '8)', '=)', ':}', ':^']
+        sad = [':-(', ':(', ':\'-(', ':\'(', ':\'-)' ':\')', ':-|', ':-', ':{', ':[', ':\\', ':*',':&', ':<']
+        for each in happy:
+            if each in text:
+                return 'Happy'
+                break
+                   
+        for each in sad:
+            if each in text:
+                return 'Sad'
+                break
+        return ''
+    
+    def profanity_analysis(self, content):
+        contain_profanity=profanity.contains_profanity(content)
+        return contain_profanity
+    
+    def location_finder(self, text):
+        doc = nlp1(text)
+        for ent in doc.ents:
+            if ent.label_ == 'GPE':
+                 return ent.text
+                 break
+ 
+    def transform_text(self, data):
+        
+        '''applies the clean and tokenise methods to the texts, 
+        encodes the target variable to numerical. 
+        Option to set pickle to True to save clean df'''
+        no_punct_translator=str.maketrans('','',string.punctuation)
+        
+        data['words'] = data['Tweet'].apply(lambda row: self.remove_url(str(row))).apply(lambda t: nltk.word_tokenize(t.translate(no_punct_translator).lower()))
+        data['URL'] = data['Tweet'].apply(lambda row: self.check_url(str(row)))
+        data['word_count'] = data['words'].apply(lambda words: len(words))
+        data['sentence_length'] = data['words'].apply(lambda w: sum(map(len, w)))
+        data['text_length'] = data['Tweet'].apply(lambda t: len(str(t)))
+        data['sentiment'] = data['Tweet'].apply(lambda t: self.sid.polarity_scores(t)['compound'])
+        data['punctuation_per_tweet'] = data['Tweet'].apply(lambda t: len(list(filter(lambda c: c in t, string.punctuation)))) / data['text_length']
+        data['unique_ratio'] = data['words'].apply(lambda row: self.unique_words(row))
+        data['avg_word_length'] = data['words'].apply(lambda words: sum(map(len, words)) / len(words) if len(words)!=0 else 0)
+        data['mention'] = data['Tweet'].apply(lambda row: self.mention(str(row)))
+        data['Retweet'] = data['words'].apply(lambda row: self.retweet(str(row)))
+        data['Hashtag'] = data['Tweet'].apply(lambda row: self.hashtag(str(row)))
+        data['emojis'] = data['Tweet'].apply(lambda row: self.extract_emojis(str(row)))
+        data['profanity'] = data['words'].apply(lambda row: self.profanity_analysis(str(row)))
+        data['location'] = data['Tweet'].apply(lambda row: self.location_finder(str(row)))
+        return data
+    
+    def transform_text1(self, data):
+        data['transform'] = data['Tweet'].apply(lambda row: self.remove_url(str(row))).apply(lambda row: self._tokenize_text(str(row)))
+        return data
+    
+def load_pickle(filepath):
+    documents_f = open(filepath, 'rb')
+    file = pickle.load(documents_f)
+    documents_f.close()
+    return file
+train_data = load_pickle("train_data.p")
+
+import tempfile
+
+model_dir = tempfile.mkdtemp() # base temp directory for running models
+
+# our Y value labels, i.e. the thing we are classifying
+labels_train = df_train['Author'].astype(str)
+
+# let's make a training function we can use with our estimators
+train_fn = tf.estimator.inputs.pandas_input_fn(
+    x=df_train,
+    y=labels_train,
+    batch_size=100,
+    num_epochs=None, # unlimited
+    shuffle=True, # shuffle the training data around
+    num_threads=5)
+
+# let's try a simple linear classifier
+linear_model = tf.estimator.LinearClassifier(
+    model_dir=model_dir, 
+    feature_columns=base_columns,
+    n_classes=9293,
+    label_vocabulary= authors)
+
+train_steps = 5000
+
+# now let's train that model!
+linear_model.train(input_fn=train_fn, steps=train_steps)
+
+authors = train_data.Author.unique().tolist()
+authors = list(map(str, authors))
+
+import tensorflow as tf
+
+# continual numeric features
+feature_word_count = tf.feature_column.numeric_column("word_count")
+feature_text_length = tf.feature_column.numeric_column("text_length")
+feature_punctuation_per_char = tf.feature_column.numeric_column("punctuation_per_tweet")
+feature_unique_ratio = tf.feature_column.numeric_column("unique_ratio")
+feature_avg_word_length = tf.feature_column.numeric_column("avg_word_length")
+feature_sentiment = tf.feature_column.numeric_column("sentiment")
+
+# if we just used the single top word we could do it this way (single-hot)
+base_columns = [
+    feature_word_count, feature_text_length, feature_punctuation_per_char, feature_unique_ratio, feature_avg_word_length, feature_sentiment
+]
+
+dev_test_fn = tf.estimator.inputs.pandas_input_fn(
+    x=df_dev,
+    y=df_dev['Author'].astype(str),
+    batch_size=100,
+    num_epochs=1, # just one run
+    shuffle=False, # don't shuffle test here
+    num_threads=5)
+
+linear_model.evaluate(input_fn=dev_test_fn)["accuracy"]
+
