@@ -8,6 +8,8 @@ https://www.kaggle.com/c/whodunnit/leaderboard
 
 ## Final Result ##
 ✨18 out of 162 
+
+
 ![image](https://github.com/alanwangwyz/Authorship-Attribution/blob/master/image/Leaderboard.jpeg)
 
 ## Kaggle Improvement ##
